@@ -8,13 +8,13 @@ const {
     updateContact } = require('../../controllers/contacts')
     
 const { checkContactById, checkCreateContactData } = require('../../middlewares/contactMiddlewares');
+const { protect } = require('../../middlewares/authMiddlewares');
 
 const router = express.Router();
 
-router
-  .route('/')
-  .post(checkCreateContactData, addContact)
-  .get(listContacts);
+router.use(protect);
+router.get('/', protect, listContacts);
+router.post('/', checkCreateContactData, addContact)
 
 router.use('/:id', checkContactById);
 router

@@ -1,20 +1,29 @@
-const fs = require('fs/promises');
-const uuid = require('uuid').v4;
-const { createContactValidator, updateContactValidator } = require('../utils/contactValidator');
-const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const Contact = require('../models/contactModel');
 
-
-const contactsDB = './controllers/contacts.json';
-
 // GET contacts list
-const listContacts = async (req, res) => {
-  const contacts = await Contact.find();
+const listContacts = catchAsync(async (req, res) => {
+  const owner = req.user._id.toHexString();
+  
+  const { page, limit, favorite } = req.query;
+  
+  const findOptions = favorite ? { owner, favorite } : { owner };
+  
+  const contactQuery = Contact.find(findOptions)
+  
+  const paginationPage = +page || 1;
+  const paginationLimit = +limit || 5;
+  const skip = (paginationPage - 1) * paginationLimit;
+
+  contactQuery.skip(skip).limit(paginationLimit);
+
+  const contacts = await contactQuery;
+  const total = await Contact.count(findOptions);
      res.status(200).json({
-      contacts,
+       contacts,
+       total
     })  
-}
+})
 
 // GET contact By ID
 const getContactById = async (req, res) => {
@@ -28,15 +37,21 @@ const getContactById = async (req, res) => {
 // DELETE contact
 const removeContact = catchAsync(async (req, res) => {
   const { id } = req.params;
-
   await Contact.findByIdAndDelete(id);
-
   res.sendStatus(204);
 })
 
 // POST new contact
 const addContact = catchAsync(async (req, res, next) => {
-  const newContact = await Contact.create({ ...req.body });
+
+  const newContactData = {
+    owner: req.user._id.toHexString(),
+    name: req.body.name,
+    email: req.body.email,
+    phone: req.body.phone
+  }
+
+  const newContact = await Contact.create(newContactData);
   
   res.status(201).json({        
     contact: newContact,    
