@@ -8,7 +8,6 @@ const sharp = require('sharp');
 
 class ImageService {
     static upload(name) {
-        console.log(name)
         const multerStorage = multer.diskStorage({
   destination: (req, file, callbackfunc) => {
     callbackfunc(null, 'tmp');
