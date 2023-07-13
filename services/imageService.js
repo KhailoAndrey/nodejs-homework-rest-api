@@ -9,15 +9,15 @@ const sharp = require('sharp');
 class ImageService {
     static upload(name) {
         const multerStorage = multer.diskStorage({
-  destination: (req, file, callbackfunc) => {
-    callbackfunc(null, 'tmp');
-  },
-  filename: (req, file, callbackfunc) => {
-      const extension = file.mimetype.split('/')[1];
-      console.log(req.user);
-    callbackfunc(null, `${req.user.email}-${uuid()}.${extension}`);
-  }
-});
+            destination: (req, file, callbackfunc) => {
+                callbackfunc(null, 'tmp');
+            },
+            filename: (req, file, callbackfunc) => {
+                const extension = file.mimetype.split('/')[1];
+                // console.log(req.user);
+                callbackfunc(null, `${req.user.email}-${uuid()}.${extension}`);
+            }
+        });
 
         const multerFilter = (req, file, callbackfunc) => {
             if (file.mimetype.startsWith('image/')) {
@@ -37,14 +37,16 @@ class ImageService {
         const fileName = `${uuid()}.jpeg`;
         const fullFilePath = path.join(process.cwd(), 'public/avatars', ...pathSegments);
         await fse.ensureDir(fullFilePath);
+        console.log('path-->>',fullFilePath)
         await sharp(file.buffer)
             .resize(options || { height: 250, width: 250 })
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
             .toFile(path.join(fullFilePath, fileName));
-        
+        console.log('filename-->', fileName)
+
         return path.join(...pathSegments, fileName)
-}
+    }
 
 }
 
