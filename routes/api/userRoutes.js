@@ -24,7 +24,7 @@ const router = express.Router();
 
 // router.use(protect);
 router.get('/current', protect, getMe);
-router.patch('/update-me', uploadUserAvatar, updateMe);
+router.patch('/update-me', protect, uploadUserAvatar, updateMe);
 router.patch('/update-my-password', protect, checkMyPassword, updateMyPassword);
 
 

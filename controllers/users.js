@@ -86,7 +86,7 @@ exports.updateMe = catchAsync(async (req, res) => {
     const { _id } = req.user;
 
   if (file) {
-user.avatarUrl = await ImageService.save(file, {width: 250, height: 250}, 'public', 'avatars', _id )
+user.avatarUrl = await ImageService.save(file, null, user.email )
   }
 
   Object.keys(req.body).forEach((key) => {

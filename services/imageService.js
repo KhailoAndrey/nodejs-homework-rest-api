@@ -13,8 +13,9 @@ class ImageService {
     callbackfunc(null, 'tmp');
   },
   filename: (req, file, callbackfunc) => {
-    const extension = file.mimetype.split('/')[1];
-    callbackfunc(null, `${req.user._id}-${uuid()}.${extension}`);
+      const extension = file.mimetype.split('/')[1];
+      console.log(req.user);
+    callbackfunc(null, `${req.user.email}-${uuid()}.${extension}`);
   }
 });
 
@@ -35,7 +36,6 @@ class ImageService {
     static async save(file, options, ...pathSegments) {
         const fileName = `${uuid()}.jpeg`;
         const fullFilePath = path.join(process.cwd(), 'public/avatars', ...pathSegments);
-
         await fse.ensureDir(fullFilePath);
         await sharp(file.buffer)
             .resize(options || { height: 250, width: 250 })
