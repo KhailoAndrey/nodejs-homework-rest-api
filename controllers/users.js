@@ -1,5 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const {User} = require('../models/userModel');
+// const { response } = require('../app');
+const ImageService = require('../services/imageService');
 
 /**
  * Create user
@@ -31,7 +33,7 @@ exports.getUsersList = catchAsync(async (req, res) => {
  * Get user by id
  */
 exports.getUserById = catchAsync(async (req, res) => {
-  console.log(req)
+  // console.log(req)
   const { user } = req;
   res.status(200).json({
     user,
@@ -75,5 +77,30 @@ exports.getMe = (req, res) => {
   res.status(200).json({
     email: req.user.email,
     subscription: req.user.subscription
+  })
+}
+
+exports.updateMe = catchAsync(async (req, res) => { 
+  const { user, file } = req;
+        console.log('file-->', file)
+    // const { _id } = req.user;
+
+  if (file) {
+user.avatarUrl = await ImageService.save(file, null, user.email)
+  }
+
+  Object.keys(req.body).forEach((key) => {
+    user[key] = req.body[key];
+  });
+  const updatedUser = await user.save();
+
+  res.status(200).json({
+    user: updatedUser,
+  })
+})
+
+exports.updateMyPassword = (req, res) => {
+  res.status(200).json({
+    user: req.user,
   })
 }
