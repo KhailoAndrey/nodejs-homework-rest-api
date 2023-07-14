@@ -14,7 +14,6 @@ class ImageService {
             },
             filename: (req, file, callbackfunc) => {
                 const extension = file.mimetype.split('/')[1];
-                // console.log(req.user);
                 callbackfunc(null, `${uuid()}.${extension}`);
             }
         });
@@ -37,13 +36,11 @@ class ImageService {
         const fileName = `${uuid()}.jpeg`;
         const fullFilePath = path.join(process.cwd(), 'public/avatars', ...pathSegments);
         await fse.ensureDir(fullFilePath);
-        console.log('path-->>',fullFilePath)
         await sharp(file.buffer)
             .resize(options || { height: 250, width: 250 })
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
             .toFile(path.join(fullFilePath, fileName));
-        console.log('filename-->', fileName)
 
         return path.join(...pathSegments, fileName)
     }
