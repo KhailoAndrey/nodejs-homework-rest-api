@@ -15,7 +15,7 @@ class ImageService {
             filename: (req, file, callbackfunc) => {
                 const extension = file.mimetype.split('/')[1];
                 // console.log(req.user);
-                callbackfunc(null, `${req.user.email}-${uuid()}.${extension}`);
+                callbackfunc(null, `${uuid()}.${extension}`);
             }
         });
 
