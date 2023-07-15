@@ -8,7 +8,6 @@ const { createUserDataValidator, updateUserDataValidator, newPassValidator } = r
 const ImageService = require('../services/imageService');
 
 const checkUserById = catchAsync(async (req, res, next) => {
-  // console.log(req.params)
   const { id } = req.params;
 
   const idIsValid = Types.ObjectId.isValid(id);

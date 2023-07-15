@@ -25,8 +25,19 @@ const userSchema = new mongoose.Schema(
     type: String,
     default: null,
     },
-    avatarURL: {
+  avatarURL: {
       type: String
+    },
+    passwordResetToken: String,
+  
+    passwordResetExpires: Date,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, "Verify token is required"],
     },
 },
   {
@@ -36,7 +47,7 @@ const userSchema = new mongoose.Schema(
 )
 
 // Pre save hook. Fires on Create and Save.
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function(next) {
   if (this.isNew) {
     const emailHash = crypto.createHash('md5').update(this.email).digest('hex');
     this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=robohash`;
@@ -53,6 +64,14 @@ userSchema.pre('save', async function (next) {
 
 // Custom method
 userSchema.methods.checkPassword = (candidate, hash) => bcrypt.compare(candidate, hash);
+userSchema.methods.createPasswordResetToken = function() {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+  return resetToken;
+}
 
 const User = mongoose.model('User', userSchema);
 

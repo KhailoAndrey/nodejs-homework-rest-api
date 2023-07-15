@@ -82,7 +82,6 @@ exports.getMe = (req, res) => {
 
 exports.updateMe = catchAsync(async (req, res) => { 
   const { user, file } = req;
-        console.log('file-->', file)
     // const { _id } = req.user;
 
   if (file) {
